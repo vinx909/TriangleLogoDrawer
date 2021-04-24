@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
 {
-    public class InMemoryPointData : IPointData
+    public class InMemoryPointData : PointData
     {
         private List<Point> points;
 
-        public InMemoryPointData()
+        public InMemoryPointData(ITriangleData triangleData) : base(triangleData)
         {
             points = new List<Point>()
             {
@@ -22,17 +22,12 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
             };
         }
 
-        public void Create(Point createdPoint)
+        public override void Create(Point createdPoint)
         {
             points.Add(createdPoint);
         }
 
-        public void Delete(int pointToDeleteId)
-        {
-            points.Remove(Get(pointToDeleteId));
-        }
-
-        public void Edit(Point editedPoint)
+        public override void Edit(Point editedPoint)
         {
             for (int i = 0; i < points.Count; i++)
             {
@@ -44,19 +39,24 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
             }
         }
 
-        public Point Get(int pointId)
+        public override Point Get(int pointId)
         {
             return points.FirstOrDefault(p => p.Id == pointId);
         }
 
-        public IEnumerable<Point> GetAll()
+        public override IEnumerable<Point> GetAll()
         {
             return points;
         }
 
-        public IEnumerable<Point> GetAll(int imageId)
+        public override IEnumerable<Point> GetAll(int imageId)
         {
             return points.Where(p => p.ImageId == imageId);
+        }
+
+        protected override void Remove(int pointToDeleteId)
+        {
+            points.Remove(Get(pointToDeleteId));
         }
     }
 }

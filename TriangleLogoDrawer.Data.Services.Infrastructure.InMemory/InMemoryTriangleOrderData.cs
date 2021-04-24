@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
 {
-    public class InMemoryTriangleOrderData : ITriangleOrderData
+    public class InMemoryTriangleOrderData : TriangleOrderData
     {
         private List<TriangleOrder> triangleOrders;
 
@@ -21,47 +21,39 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
             };
         }
 
-        public void Create(TriangleOrder createdTriangleOrder)
+        public override TriangleOrder Get(int orderId)
         {
-            foreach(TriangleOrder order in GetAll(createdTriangleOrder.ShapeId))
+            return triangleOrders.FirstOrDefault(t => t.Id == orderId);
+        }
+        public override IEnumerable<TriangleOrder> GetAll()
+        {
+            return triangleOrders;
+        }
+        public override IEnumerable<TriangleOrder> GetAll(int shapeId)
+        {
+            return triangleOrders.Where(t => t.ShapeId == shapeId);
+        }
+
+        protected override void Add(TriangleOrder addedTriangleOrder)
+        {
+            triangleOrders.Add(addedTriangleOrder);
+        }
+
+        protected override void Edit(TriangleOrder editedTrianlgeOrder)
+        {
+            for (int i = 0; i < triangleOrders.Count; i++)
             {
-                if (order.TriangleOrigionalId == createdTriangleOrder.TriangleOrigionalId) {
-                    {
-                        if(order.TriangleFollowingId == createdTriangleOrder.TriangleFollowingId)
-                        {
-                            return;
-                        }
-                        order.TriangleOrigionalId = createdTriangleOrder.TriangleFollowingId;
-                        break;
-                    }
+                if (triangleOrders[i].Id == editedTrianlgeOrder.Id)
+                {
+                    triangleOrders[i] = editedTrianlgeOrder;
+                    return;
                 }
             }
-            triangleOrders.Add(createdTriangleOrder);
         }
 
-        public void Delete(int shapeId, int triangleOrigionalId)
+        protected override void Remove(TriangleOrder orderToDelete)
         {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<TriangleOrder> GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<TriangleOrder> GetAll(int shapeId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<TriangleOrder> GetOrder(int shapeId, int triangleId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<TriangleOrder> GetOrderFromTriangle(int shapeId, int triangleId)
-        {
-            throw new NotImplementedException();
+            triangleOrders.Remove(orderToDelete);
         }
     }
 }

@@ -10,8 +10,8 @@ namespace TriangleLogoDrawer.Data
     {
         public int Id { get; set; }
         public int ImageId { get; set; }
-        public int PointOneId { get; set; }
-        public int PointTwoId { get; set; }
-        public int PointThreeId { get; set; }
+        public int PointIdOne { get; set; }
+        public int PointIdTwo { get; set; }
+        public int PointIdThree { get; set; }
     }
 }

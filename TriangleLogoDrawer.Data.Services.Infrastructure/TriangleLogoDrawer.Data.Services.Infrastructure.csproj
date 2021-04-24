@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TriangleLogoDrawer.Data.Services.Infrastructure\TriangleLogoDrawer.Data.Services.Infrastructure.csproj" />
     <ProjectReference Include="..\TriangleLogoDrawer.Data.Services\TriangleLogoDrawer.Data.Services.csproj" />
     <ProjectReference Include="..\TriangleLogoDrawer.Data\TriangleLogoDrawer.Data.csproj" />
   </ItemGroup>

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
 {
-    public class InMemoryImageData : IImageData
+    public class InMemoryImageData : ImageData
     {
         private readonly List<Image> images;
 
-        public InMemoryImageData()
+        public InMemoryImageData(IPointData pointData, IShapeData shapeData) : base(pointData, shapeData)
         {
             images = new List<Image> {
                 new Image() { Id = 1, Name = "test 1" },
@@ -19,17 +19,12 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
             };
         }
 
-        public void Create(Image createdImage)
+        public override void Create(Image createdImage)
         {
             images.Add(createdImage);
         }
 
-        public void Delete(int imageToDeleteId)
-        {
-            images.Remove(Get(imageToDeleteId));
-        }
-
-        public void Edit(Image editedImage)
+        public override void Edit(Image editedImage)
         {
             for (int i = 0; i < images.Count; i++)
             {
@@ -41,14 +36,19 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
             }
         }
 
-        public Image Get(int imageId)
+        public override Image Get(int imageId)
         {
             return images.FirstOrDefault(i => i.Id == imageId);
         }
 
-        public IEnumerable<Image> GetAll()
+        public override IEnumerable<Image> GetAll()
         {
             return images;
+        }
+
+        protected override void Remove(Image imageToDelete)
+        {
+            images.Remove(imageToDelete);
         }
     }
 }

@@ -8,6 +8,7 @@ namespace TriangleLogoDrawer.Data
 {
     public class TriangleOrder
     {
+        public int Id { get; set; }
         public int ShapeId { get; set; }
         public int TriangleOrigionalId { get; set; }
         public int TriangleFollowingId { get; set; }

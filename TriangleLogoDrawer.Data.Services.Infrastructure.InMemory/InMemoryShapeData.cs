@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
 {
-    public class InMemoryShapeData : IShapeData
+    public class InMemoryShapeData : ShapeData
     {
         private List<Shape> shapes;
 
-        public InMemoryShapeData()
+        public InMemoryShapeData(ITriangleOrderData triangleOrderData) : base(triangleOrderData)
         {
             shapes = new List<Shape>()
             {
@@ -19,17 +19,12 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
             };
         }
 
-        public void Create(Shape createdShape)
+        public override void Create(Shape createdShape)
         {
             shapes.Add(createdShape);
         }
 
-        public void Delete(int shapeToDeleteId)
-        {
-            shapes.Remove(Get(shapeToDeleteId));
-        }
-
-        public void Edit(Shape editedShape)
+        public override void Edit(Shape editedShape)
         {
             for (int i = 0; i < shapes.Count; i++)
             {
@@ -41,19 +36,24 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
             }
         }
 
-        public Shape Get(int shapeId)
+        public override Shape Get(int shapeId)
         {
             return shapes.FirstOrDefault(s => s.Id == shapeId);
         }
 
-        public IEnumerable<Shape> GetAll()
+        public override IEnumerable<Shape> GetAll()
         {
             return shapes;
         }
 
-        public IEnumerable<Shape> GetAll(int imageId)
+        public override IEnumerable<Shape> GetAll(int imageId)
         {
             return shapes.Where(s => s.ImageId == imageId);
+        }
+
+        protected override void Remove(int shapeToDeleteId)
+        {
+            shapes.Remove(Get(shapeToDeleteId));
         }
     }
 }
