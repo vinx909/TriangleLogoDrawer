@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TriangleLogoDrawer.Data.Services.Infrastructure.InMemory;
-using TriangleLogoDrawer.Editor;
+using TriangleLogoDrawer.SimpleDependencyProvider;
 
 namespace TriangleLogoDrawer.Data.Services.SimpleDependencyProvidedSetup
 {

@@ -13,15 +13,17 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
         public InMemoryImageData(IPointData pointData, IShapeData shapeData) : base(pointData, shapeData)
         {
             images = new List<Image> {
-                new Image() { Id = 1, Name = "test 1" },
+                new Image() { Id = 1, Name = "test 1", BackgroundImagePath = "C:\\Users\\vinx.909\\Pictures\\channel logo by BadAnimations101.jpg" },
                 new Image() { Id = 2, Name = "test 2" },
                 new Image() { Id = 3, Name = "test 3" }
             };
         }
 
-        public override void Create(Image createdImage)
+        public override int Create(Image createdImage)
         {
+            createdImage.Id = images.Max(i => i.Id) + 1;
             images.Add(createdImage);
+            return createdImage.Id;
         }
 
         public override void Edit(Image editedImage)

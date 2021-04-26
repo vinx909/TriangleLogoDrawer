@@ -17,7 +17,7 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure
             this.shapeData = shapeData;
         }
 
-        public abstract void Create(Image createdImage);
+        public abstract int Create(Image createdImage);
         public void Delete(int imageToDeleteId)
         {
             foreach (Point point in pointData.GetAll(imageToDeleteId))

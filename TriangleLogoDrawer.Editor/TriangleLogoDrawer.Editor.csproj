@@ -9,8 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SimpleDependencyProvider\SimpleDependencyProvider.csproj" />
     <ProjectReference Include="..\TriangleLogoDrawer.Data.Services.SimpleDependencyProvidedSetup\TriangleLogoDrawer.Data.Services.SimpleDependencyProvidedSetup.csproj" />
-    <ProjectReference Include="..\TriangleLogoDrawer.Data.Services\TriangleLogoDrawer.Data.Services.csproj" />
-    <ProjectReference Include="..\TriangleLogoDrawer.Data\TriangleLogoDrawer.Data.csproj" />
+    <ProjectReference Include="..\TriangleLogoDrawer.Editor.WinForm\TriangleLogoDrawer.Editor.WinForm.csproj" />
   </ItemGroup>
 
 </Project>

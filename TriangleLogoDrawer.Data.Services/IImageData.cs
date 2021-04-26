@@ -11,7 +11,7 @@ namespace TriangleLogoDrawer.Data.Services
     {
         public IEnumerable<Image> GetAll();
         public Image Get(int imageId);
-        public void Create(Image createdImage);
+        public int Create(Image createdImage);
         public void Edit(Image editedImage);
         public void Delete(int imageToDeleteId);
     }

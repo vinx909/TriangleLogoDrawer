@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MultiWinFormCloser\MultiWinFormCloser.csproj" />
+    <ProjectReference Include="..\SimpleDependencyProvider\SimpleDependencyProvider.csproj" />
+    <ProjectReference Include="..\TriangleLogoDrawer.Data.Services\TriangleLogoDrawer.Data.Services.csproj" />
+    <ProjectReference Include="..\TriangleLogoDrawer.Data\TriangleLogoDrawer.Data.csproj" />
+    <ProjectReference Include="..\TriangleLogoDrawer.Editor.FormOpener\TriangleLogoDrawer.Editor.FormOpener.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="ImageSelectionForm.cs" />
+  </ItemGroup>
+
+</Project>
