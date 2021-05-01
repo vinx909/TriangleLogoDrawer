@@ -17,19 +17,41 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure
             this.shapeData = shapeData;
         }
 
-        public abstract void Create(Triangle createdTriangle);
+        public void Create(Triangle createdTriangle)
+        {
+            foreach(Triangle triangle in GetAll(createdTriangle.ImageId))
+            {
+                int[] points = new int[3]
+                {
+                    triangle.PointIdOne,
+                    triangle.PointIdTwo,
+                    triangle.PointIdThree
+                };
+                if(points.Contains(createdTriangle.PointIdOne) && points.Contains(createdTriangle.PointIdTwo) && points.Contains(createdTriangle.PointIdThree))
+                {
+                    return;
+                }
+            }
+            Add(createdTriangle);
+        }
+        protected abstract void Add(Triangle createdTriangle);
         public void Delete(int triangleToDeleteId)
         {
             Triangle triangleToDelete = Get(triangleToDeleteId);
+            List<TriangleOrder> ordersToDetele = new();
             foreach (Shape shape in shapeData.GetAll(triangleToDelete.ImageId))
             {
                 foreach (TriangleOrder order in triangleOrderData.GetAll(shape.Id))
                 {
                     if(order.TriangleOrigionalId == triangleToDeleteId || order.TriangleFollowingId == triangleToDeleteId)
                     {
-                        triangleOrderData.Delete(order.Id);
+                        ordersToDetele.Add(triangleOrderData.Get(order.Id));                                              
                     }
                 }
+            }
+            foreach(TriangleOrder orderToDelete in ordersToDetele)
+            {
+                triangleOrderData.Delete(orderToDelete);
             }
             Remove(triangleToDelete);
         }

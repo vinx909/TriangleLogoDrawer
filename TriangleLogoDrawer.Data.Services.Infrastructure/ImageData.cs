@@ -20,14 +20,26 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure
         public abstract int Create(Image createdImage);
         public void Delete(int imageToDeleteId)
         {
+            List<int> pointIdsToDelete = new();
             foreach (Point point in pointData.GetAll(imageToDeleteId))
             {
-                pointData.Delete(point.Id);
+                pointIdsToDelete.Add(point.Id);
             }
+            foreach(int idToDelete in pointIdsToDelete)
+            {
+                pointData.Delete(idToDelete);
+            }
+
+            List<int> shapeIdsToDelete = new();
             foreach(Shape shape in shapeData.GetAll(imageToDeleteId))
             {
-                shapeData.Delete(shape.Id);
+                shapeIdsToDelete.Add(shape.Id);
             }
+            foreach(int idToDelete in shapeIdsToDelete)
+            {
+                shapeData.Delete(idToDelete);
+            }
+
             Remove(Get(imageToDeleteId));
         }
         protected abstract void Remove(Image imageToDelete);

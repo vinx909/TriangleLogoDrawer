@@ -14,10 +14,10 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
         {
             triangleOrders = new List<TriangleOrder>()
             {
-                new TriangleOrder(){ ShapeId = 1, TriangleOrigionalId = 1, TriangleFollowingId = 2},
-                new TriangleOrder(){ ShapeId = 1, TriangleOrigionalId = 2, TriangleFollowingId = 3},
-                new TriangleOrder(){ ShapeId = 1, TriangleOrigionalId = 3, TriangleFollowingId = 4},
-                new TriangleOrder(){ ShapeId = 2, TriangleOrigionalId = 5, TriangleFollowingId = 6},
+                new TriangleOrder(){ Id = 1, ShapeId = 1, TriangleOrigionalId = 1, TriangleFollowingId = 2},
+                new TriangleOrder(){ Id = 2, ShapeId = 1, TriangleOrigionalId = 2, TriangleFollowingId = 3},
+                new TriangleOrder(){ Id = 3, ShapeId = 1, TriangleOrigionalId = 3, TriangleFollowingId = 4},
+                new TriangleOrder(){ Id = 4, ShapeId = 2, TriangleOrigionalId = 5, TriangleFollowingId = 6},
             };
         }
 
@@ -36,6 +36,7 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
 
         protected override void Add(TriangleOrder addedTriangleOrder)
         {
+            addedTriangleOrder.Id = triangleOrders.Max(o => o.Id) + 1;
             triangleOrders.Add(addedTriangleOrder);
         }
 

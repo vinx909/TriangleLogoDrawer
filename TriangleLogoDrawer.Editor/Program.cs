@@ -66,7 +66,7 @@ namespace TriangleLogoDrawer.Editor
                     toReturn = () =>
                     {
                         EditImageInfo info = imageSelector.GetEditImageInfo();
-                        WinForm.ImageEditForm imageEditForm = new WinForm.ImageEditForm(info.Image, info.Fullscreen, info.Width, info.Height);
+                        WinForm.ImageEditForm imageEditForm = new WinForm.ImageEditForm(DependencyProvider.Provide<IPointData>(), DependencyProvider.Provide<IShapeData>(), DependencyProvider.Provide<ITriangleData>(), DependencyProvider.Provide<ITriangleOrderData>(), info.Image, info.Fullscreen, info.Width, info.Height);
                         imageEditForm.Show();
                     };
                     break;

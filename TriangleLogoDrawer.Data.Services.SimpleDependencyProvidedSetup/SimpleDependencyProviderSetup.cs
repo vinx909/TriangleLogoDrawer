@@ -33,16 +33,16 @@ namespace TriangleLogoDrawer.Data.Services.SimpleDependencyProvidedSetup
                     DependencyProvider.Add(typeof(IImageData), imageProvider);
 
                     Func<IPointData> pointProvider = () => { return container.InMemoryPointData; };
-                    DependencyProvider.Add(typeof(IPointData), imageProvider);
+                    DependencyProvider.Add(typeof(IPointData), pointProvider);
 
                     Func<IShapeData> shapeProvider = () => { return container.InMemoryShapeData; };
-                    DependencyProvider.Add(typeof(IShapeData), imageProvider);
+                    DependencyProvider.Add(typeof(IShapeData), shapeProvider);
 
                     Func<ITriangleData> triangleProvider = () => { return container.InMemoryTriangleData; };
-                    DependencyProvider.Add(typeof(ITriangleData), imageProvider);
+                    DependencyProvider.Add(typeof(ITriangleData), triangleProvider);
 
                     Func<ITriangleOrderData> orderProvider = () => { return container.InMemoryTriangleOrderData; };
-                    DependencyProvider.Add(typeof(ITriangleOrderData), imageProvider);
+                    DependencyProvider.Add(typeof(ITriangleOrderData), orderProvider);
                     break;
             }
         }

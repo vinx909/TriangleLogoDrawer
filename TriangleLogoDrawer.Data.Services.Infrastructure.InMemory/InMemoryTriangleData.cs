@@ -23,8 +23,9 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
             };
         }
 
-        public override void Create(Triangle createdTriangle)
+        protected override void Add(Triangle createdTriangle)
         {
+            createdTriangle.Id = triangles.Max(t => t.Id) + 1;
             triangles.Add(createdTriangle);
         }
 

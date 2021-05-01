@@ -19,12 +19,17 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure
         public void Delete(int pointToDeleteId)
         {
             Point pointToDelete = Get(pointToDeleteId);
+            List<int> triangleIdsToDelete = new();
             foreach (Triangle triangle in triangleData.GetAll(pointToDelete.ImageId))
             {
                 if(triangle.PointIdOne == pointToDeleteId || triangle.PointIdTwo == pointToDeleteId || triangle.PointIdThree == pointToDeleteId)
                 {
-                    triangleData.Delete(triangle.Id);
+                    triangleIdsToDelete.Add(triangle.Id);
                 }
+            }
+            foreach(int idToDelete in triangleIdsToDelete)
+            {
+                triangleData.Delete(idToDelete);
             }
             Remove(pointToDeleteId);
         }

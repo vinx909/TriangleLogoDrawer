@@ -58,6 +58,21 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure
         protected abstract void Remove(TriangleOrder orderToDelete);
         public abstract IEnumerable<TriangleOrder> GetAll();
         public abstract IEnumerable<TriangleOrder> GetAll(int shapeId);
+        public IEnumerable<List<TriangleOrder>> GetOrder(int shapeId)
+        {
+            List<TriangleOrder> allOrders = new List<TriangleOrder>(GetAll(shapeId));
+            List<List<TriangleOrder>> toReturn = new List<List<TriangleOrder>>();
+            while(allOrders.Count() != 0)
+            {
+                List<TriangleOrder> newOrder = GetOrder(shapeId, allOrders.FirstOrDefault().Id);
+                toReturn.Add(newOrder);
+                foreach (TriangleOrder newOrderpart in newOrder)
+                {
+                    allOrders.RemoveAll(o => o.Id == newOrderpart.Id);
+                }
+            }
+            return toReturn;
+        }
         public List<TriangleOrder> GetOrder(int shapeId, int orderId)
         {
             return GetOrder(shapeId, orderId, GetOrderFromTriangle(shapeId, orderId));
@@ -77,21 +92,25 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure
         public List<TriangleOrder> GetOrderFromTriangle(int shapeId, int orderId)
         {
             List<TriangleOrder> order = new List<TriangleOrder>();
-            TriangleOrder triangleOrder = Get(orderId);
-            order.Add(triangleOrder);
-            return GetOrderFromTriangle(shapeId, triangleOrder.TriangleFollowingId, order);
-        }
-        private List<TriangleOrder> GetOrderFromTriangle(int shapeId, int orderIdOfNextOrder, List<TriangleOrder> existingOrder)
-        {
-            foreach (TriangleOrder order in GetAll(shapeId))
+            TriangleOrder previousOrder = Get(orderId);
+            order.Add(previousOrder);
+            bool addition;
+            do
             {
-                if (order.TriangleOrigionalId == orderIdOfNextOrder)
+                addition = false;
+                foreach (TriangleOrder triangleOrder in GetAll(shapeId))
                 {
-                    existingOrder.Add(order);
-                    return GetOrder(shapeId, order.TriangleFollowingId, existingOrder);
+                    if (previousOrder.TriangleFollowingId == triangleOrder.TriangleOrigionalId)
+                    {
+                        order.Add(triangleOrder);
+                        previousOrder = triangleOrder;
+                        addition = true;
+                        break;
+                    }
                 }
             }
-            return existingOrder;
+            while (addition == true);
+            return order;
         }
         public abstract TriangleOrder Get(int orderId);
     }

@@ -21,6 +21,7 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
 
         public override void Create(Shape createdShape)
         {
+            createdShape.Id = shapes.Max(s => s.Id) + 1;
             shapes.Add(createdShape);
         }
 

@@ -18,9 +18,14 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure
         public abstract void Create(Shape createdShape);
         public void Delete(int shapeToDeleteId)
         {
+            List<TriangleOrder> orderIdsToDelete = new();
             foreach(TriangleOrder order in triangleOrderData.GetAll(shapeToDeleteId))
             {
-                triangleOrderData.Delete(order.Id);
+                orderIdsToDelete.Add(order);
+            }
+            foreach(TriangleOrder orderToDelete in orderIdsToDelete)
+            {
+                triangleOrderData.Delete(orderToDelete);
             }
             Remove(shapeToDeleteId);
         }

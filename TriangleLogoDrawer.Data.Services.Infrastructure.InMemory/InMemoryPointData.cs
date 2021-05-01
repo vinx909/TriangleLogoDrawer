@@ -14,7 +14,7 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
         {
             points = new List<Point>()
             {
-                new Point(){ Id = 1, ImageId = 1, X = 0, Y = 0},
+                new Point(){ Id = 1, ImageId = 1, X = 0.1m, Y = 0},
                 new Point(){ Id = 2, ImageId = 1, X = -0.5m, Y = 0},
                 new Point(){ Id = 3, ImageId = 1, X = 0, Y = 0.5m},
                 new Point(){ Id = 4, ImageId = 1, X = 0.5m, Y = 0},
@@ -24,6 +24,7 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
 
         public override void Create(Point createdPoint)
         {
+            createdPoint.Id = points.Max(p => p.Id) + 1;
             points.Add(createdPoint);
         }
 
