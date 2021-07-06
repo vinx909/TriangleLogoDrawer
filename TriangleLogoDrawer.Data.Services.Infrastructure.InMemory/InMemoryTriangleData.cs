@@ -8,6 +8,8 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
 {
     public class InMemoryTriangleData : TriangleData
     {
+        private const int minId = 1;
+
         private List<Triangle> triangles;
 
         public InMemoryTriangleData(ITriangleOrderData triangleOrderData, IShapeData shapeData) : base(triangleOrderData, shapeData)
@@ -25,7 +27,15 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
 
         protected override void Add(Triangle createdTriangle)
         {
-            createdTriangle.Id = triangles.Max(t => t.Id) + 1;
+            if(triangles.Count > 0)
+            {
+                createdTriangle.Id = triangles.Max(t => t.Id) + 1;
+            }
+            else
+            {
+                createdTriangle.Id = minId;
+            }
+            
             triangles.Add(createdTriangle);
         }
 

@@ -14,16 +14,18 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
         {
             triangleOrders = new List<TriangleOrder>()
             {
-                new TriangleOrder(){ Id = 1, ShapeId = 1, TriangleOrigionalId = 1, TriangleFollowingId = 2},
-                new TriangleOrder(){ Id = 2, ShapeId = 1, TriangleOrigionalId = 2, TriangleFollowingId = 3},
-                new TriangleOrder(){ Id = 3, ShapeId = 1, TriangleOrigionalId = 3, TriangleFollowingId = 4},
-                new TriangleOrder(){ Id = 4, ShapeId = 2, TriangleOrigionalId = 5, TriangleFollowingId = 6},
+                new TriangleOrder(){ ShapeId = 1, TriangleId = 1, OrderNumber = 0},
+                new TriangleOrder(){ ShapeId = 1, TriangleId = 2, OrderNumber = 1},
+                new TriangleOrder(){ ShapeId = 1, TriangleId = 3, OrderNumber = 2},
+                new TriangleOrder(){ ShapeId = 1, TriangleId = 4, OrderNumber = 3},
+                new TriangleOrder(){ ShapeId = 2, TriangleId = 5, OrderNumber = 0},
+                new TriangleOrder(){ ShapeId = 2, TriangleId = 6, OrderNumber = 1}
             };
         }
 
-        public override TriangleOrder Get(int orderId)
+        public override TriangleOrder Get(int shapeId, int triangleId)
         {
-            return triangleOrders.FirstOrDefault(t => t.Id == orderId);
+            return triangleOrders.FirstOrDefault(t => t.ShapeId == shapeId && t.TriangleId == triangleId);
         }
         public override IEnumerable<TriangleOrder> GetAll()
         {
@@ -33,28 +35,21 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
         {
             return triangleOrders.Where(t => t.ShapeId == shapeId);
         }
-
         protected override void Add(TriangleOrder addedTriangleOrder)
         {
-            addedTriangleOrder.Id = triangleOrders.Max(o => o.Id) + 1;
             triangleOrders.Add(addedTriangleOrder);
         }
-
         protected override void Edit(TriangleOrder editedTrianlgeOrder)
         {
-            for (int i = 0; i < triangleOrders.Count; i++)
-            {
-                if (triangleOrders[i].Id == editedTrianlgeOrder.Id)
-                {
-                    triangleOrders[i] = editedTrianlgeOrder;
-                    return;
-                }
-            }
+            Get(editedTrianlgeOrder.ShapeId, editedTrianlgeOrder.TriangleId).OrderNumber = editedTrianlgeOrder.OrderNumber;
         }
-
+        protected override TriangleOrder GetFromOrderNumber(int shapeId, int orderNumber)
+        {
+            return triangleOrders.FirstOrDefault(t => t.ShapeId == shapeId && t.OrderNumber == orderNumber);
+        }
         protected override void Remove(TriangleOrder orderToDelete)
         {
-            triangleOrders.Remove(orderToDelete);
+            triangleOrders.Remove(Get(orderToDelete.ShapeId, orderToDelete.TriangleId));
         }
     }
 }

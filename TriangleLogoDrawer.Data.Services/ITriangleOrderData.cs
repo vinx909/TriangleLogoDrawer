@@ -10,11 +10,9 @@ namespace TriangleLogoDrawer.Data.Services
     {
         public IEnumerable<TriangleOrder> GetAll();
         public IEnumerable<TriangleOrder> GetAll(int shapeId);
-        public IEnumerable<List<TriangleOrder>> GetOrder(int shapeId);
-        public List<TriangleOrder> GetOrder(int shapeId, int orderId);
-        public List<TriangleOrder> GetOrderFromTriangle(int shapeId, int orderId);
-        public TriangleOrder Get(int orderId);
+        public List<TriangleOrder> GetOrder(int shapeId);
+        public TriangleOrder Get(int shapeId, int triangleId);
         public void Create(TriangleOrder createdTriangleOrder);
-        public void Delete(TriangleOrder orderToDeleteId);
+        public void Delete(int shapeId, int triangleId);
     }
 }

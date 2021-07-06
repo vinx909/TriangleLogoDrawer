@@ -38,20 +38,20 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure
         public void Delete(int triangleToDeleteId)
         {
             Triangle triangleToDelete = Get(triangleToDeleteId);
-            List<TriangleOrder> ordersToDetele = new();
+            List<int> orderShapeIdsToDetele = new();
             foreach (Shape shape in shapeData.GetAll(triangleToDelete.ImageId))
             {
                 foreach (TriangleOrder order in triangleOrderData.GetAll(shape.Id))
                 {
-                    if(order.TriangleOrigionalId == triangleToDeleteId || order.TriangleFollowingId == triangleToDeleteId)
+                    if(order.TriangleId == triangleToDeleteId)
                     {
-                        ordersToDetele.Add(triangleOrderData.Get(order.Id));                                              
+                        orderShapeIdsToDetele.Add(order.ShapeId);                                              
                     }
                 }
             }
-            foreach(TriangleOrder orderToDelete in ordersToDetele)
+            foreach(int orderShapeIdToDetele in orderShapeIdsToDetele)
             {
-                triangleOrderData.Delete(orderToDelete);
+                triangleOrderData.Delete(orderShapeIdToDetele, triangleToDeleteId);
             }
             Remove(triangleToDelete);
         }

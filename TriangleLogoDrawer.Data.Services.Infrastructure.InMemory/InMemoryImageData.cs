@@ -8,6 +8,8 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
 {
     public class InMemoryImageData : ImageData
     {
+        private const int minId = 1;
+
         private readonly List<Image> images;
 
         public InMemoryImageData(IPointData pointData, IShapeData shapeData) : base(pointData, shapeData)
@@ -21,7 +23,15 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
 
         public override int Create(Image createdImage)
         {
-            createdImage.Id = images.Max(i => i.Id) + 1;
+            if (images.Count > 0)
+            {
+                createdImage.Id = images.Max(i => i.Id) + 1;
+            }
+            else
+            {
+                createdImage.Id = minId;
+            }
+
             images.Add(createdImage);
             return createdImage.Id;
         }
@@ -48,9 +58,9 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure.InMemory
             return images;
         }
 
-        protected override void Remove(Image imageToDelete)
+        protected override void Remove(int imageToDeleteId)
         {
-            images.Remove(imageToDelete);
+            images.Remove(Get(imageToDeleteId));
         }
     }
 }

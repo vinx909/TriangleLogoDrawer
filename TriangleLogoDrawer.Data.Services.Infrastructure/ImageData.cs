@@ -40,9 +40,9 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure
                 shapeData.Delete(idToDelete);
             }
 
-            Remove(Get(imageToDeleteId));
+            Remove(imageToDeleteId);
         }
-        protected abstract void Remove(Image imageToDelete);
+        protected abstract void Remove(int imageToDeleteId);
         public abstract void Edit(Image editedImage);
         public abstract Image Get(int imageId);
         public abstract IEnumerable<Image> GetAll();

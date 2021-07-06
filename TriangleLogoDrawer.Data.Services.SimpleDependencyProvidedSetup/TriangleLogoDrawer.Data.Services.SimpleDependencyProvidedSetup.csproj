@@ -7,9 +7,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SimpleDependencyProvider\SimpleDependencyProvider.csproj" />
+    <ProjectReference Include="..\TriangleLogoDrawer.ApplicationCore\TriangleLogoDrawer.ApplicationCore.csproj" />
     <ProjectReference Include="..\TriangleLogoDrawer.Data.Services.Infrastructure.InMemory\TriangleLogoDrawer.Data.Services.Infrastructure.InMemory.csproj" />
     <ProjectReference Include="..\TriangleLogoDrawer.Data.Services\TriangleLogoDrawer.Data.Services.csproj" />
     <ProjectReference Include="..\TriangleLogoDrawer.Data\TriangleLogoDrawer.Data.csproj" />
+    <ProjectReference Include="..\TriangleLogoDrawer.Infrastructure\TriangleLogoDrawer.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

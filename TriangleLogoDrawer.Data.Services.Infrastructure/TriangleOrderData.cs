@@ -8,110 +8,79 @@ namespace TriangleLogoDrawer.Data.Services.Infrastructure
 {
     public abstract class TriangleOrderData : ITriangleOrderData
     {
-        public void Create(TriangleOrder createdTriangleOrder)
-        {
-            foreach (TriangleOrder order in GetAll(createdTriangleOrder.ShapeId))
-            {
-                if (order.TriangleOrigionalId == createdTriangleOrder.TriangleOrigionalId)
-                {
-                    {
-                        if (order.TriangleFollowingId == createdTriangleOrder.TriangleFollowingId)
-                        {
-                            return;
-                        }
-                        order.TriangleOrigionalId = createdTriangleOrder.TriangleFollowingId;
-                        Edit(order);
-                        break;
-                    }
-                }
-            }
-            Add(createdTriangleOrder);
-        }
-        protected abstract void Add(TriangleOrder addedTriangleOrder);
-        protected abstract void Edit(TriangleOrder editedTrianlgeOrder);
-        public void Delete(int orderToDeleteId)
-        {
-            TriangleOrder toDelete = Get(orderToDeleteId);
-            Delete(toDelete);
-        }
-        public void Delete(TriangleOrder orderToDelete)
-        {
-            foreach (TriangleOrder orderEndsWithToDeleteStart in GetAll(orderToDelete.ShapeId))
-            {
-                if(orderEndsWithToDeleteStart.TriangleFollowingId == orderToDelete.TriangleOrigionalId)
-                {
-                    foreach (TriangleOrder orderStartsWithToDeleteEnd in GetAll(orderToDelete.ShapeId))
-                    {
-                        if (orderStartsWithToDeleteEnd.TriangleOrigionalId == orderToDelete.TriangleFollowingId)
-                        {
-                            orderEndsWithToDeleteStart.TriangleFollowingId = orderStartsWithToDeleteEnd.TriangleFollowingId;
-                            Edit(orderEndsWithToDeleteStart);
-                            Remove(orderToDelete);
-                            Delete(orderStartsWithToDeleteEnd);
-                            return;
-                        }
-                    }
-                }
-            }
-            Remove(orderToDelete);
-        }
-        protected abstract void Remove(TriangleOrder orderToDelete);
         public abstract IEnumerable<TriangleOrder> GetAll();
         public abstract IEnumerable<TriangleOrder> GetAll(int shapeId);
-        public IEnumerable<List<TriangleOrder>> GetOrder(int shapeId)
+        public List<TriangleOrder> GetOrder(int shapeId)
         {
-            List<TriangleOrder> allOrders = new List<TriangleOrder>(GetAll(shapeId));
-            List<List<TriangleOrder>> toReturn = new List<List<TriangleOrder>>();
-            while(allOrders.Count() != 0)
+            foreach(TriangleOrder thereAreTrianglesToOrder in GetAll(shapeId))
             {
-                List<TriangleOrder> newOrder = GetOrder(shapeId, allOrders.FirstOrDefault().Id);
-                toReturn.Add(newOrder);
-                foreach (TriangleOrder newOrderpart in newOrder)
+                int index = 0;
+                while (true)
                 {
-                    allOrders.RemoveAll(o => o.Id == newOrderpart.Id);
-                }
-            }
-            return toReturn;
-        }
-        public List<TriangleOrder> GetOrder(int shapeId, int orderId)
-        {
-            return GetOrder(shapeId, orderId, GetOrderFromTriangle(shapeId, orderId));
-        }
-        private List<TriangleOrder> GetOrder(int shapeId, int orderId, List<TriangleOrder> existingOrder)
-        {
-            foreach (TriangleOrder order in GetAll(shapeId))
-            {
-                if (order.TriangleFollowingId == orderId)
-                {
-                    existingOrder.Insert(0, order);
-                    return GetOrder(shapeId, order.Id, existingOrder);
-                }
-            }
-            return existingOrder;
-        }
-        public List<TriangleOrder> GetOrderFromTriangle(int shapeId, int orderId)
-        {
-            List<TriangleOrder> order = new List<TriangleOrder>();
-            TriangleOrder previousOrder = Get(orderId);
-            order.Add(previousOrder);
-            bool addition;
-            do
-            {
-                addition = false;
-                foreach (TriangleOrder triangleOrder in GetAll(shapeId))
-                {
-                    if (previousOrder.TriangleFollowingId == triangleOrder.TriangleOrigionalId)
+                    TriangleOrder firstOrder = GetFromOrderNumber(shapeId, index);
+                    if(firstOrder != null)
                     {
-                        order.Add(triangleOrder);
-                        previousOrder = triangleOrder;
-                        addition = true;
-                        break;
+                        return GetNextOrder(new List<TriangleOrder> { firstOrder });
                     }
+                    index++;
                 }
             }
-            while (addition == true);
-            return order;
+            return null;
         }
-        public abstract TriangleOrder Get(int orderId);
+        public abstract TriangleOrder Get(int shapeId, int triangleId);
+        public void Create(TriangleOrder createdTriangleOrder)
+        {
+            if(Get(createdTriangleOrder.ShapeId, createdTriangleOrder.TriangleId) == null)
+            {
+                TryUpOrder(createdTriangleOrder.ShapeId, createdTriangleOrder.OrderNumber);
+                Add(createdTriangleOrder);
+            }
+        }
+        public void Delete(int shapeId, int triangleId)
+        {
+            TriangleOrder toDelete = Get(shapeId, triangleId);
+            Remove(toDelete);
+            TryLowerOrder(shapeId, toDelete.OrderNumber + 1);
+        }
+
+        protected abstract TriangleOrder GetFromOrderNumber(int shapeId, int orderNumber);
+        protected abstract void Add(TriangleOrder addedTriangleOrder);
+        protected abstract void Edit(TriangleOrder editedTrianlgeOrder);
+        protected abstract void Remove(TriangleOrder orderToDelete);
+
+        private void TryUpOrder(int shapeId, int orderNumber)
+        {
+            TriangleOrder order = GetFromOrderNumber(shapeId, orderNumber);
+            if(order != null)
+            {
+                TryUpOrder(shapeId, orderNumber + 1);
+                order.OrderNumber += 1;
+                Edit(order);
+            }
+        }
+        private void TryLowerOrder(int shapeId, int orderNumber)
+        {
+            TriangleOrder order = GetFromOrderNumber(shapeId, orderNumber);
+            if (order != null)
+            {
+                order.OrderNumber -= 1;
+                Edit(order);
+                TryLowerOrder(shapeId, orderNumber + 1);
+            }
+        }
+        private List<TriangleOrder> GetNextOrder(List<TriangleOrder> existingOrder)
+        {
+            TriangleOrder lastOrder = existingOrder.Last();
+            TriangleOrder newOrderItem = GetFromOrderNumber(lastOrder.ShapeId, lastOrder.OrderNumber + 1);
+            if(newOrderItem != null)
+            {
+                existingOrder.Add(newOrderItem);
+                return GetNextOrder(existingOrder);
+            }
+            else
+            {
+                return existingOrder;
+            }
+        }
     }
 }
