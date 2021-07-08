@@ -8,8 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MultiWinFormCloser\MultiWinFormCloser.csproj" />
     <ProjectReference Include="..\SimpleDependencyProvider\SimpleDependencyProvider.csproj" />
-    <ProjectReference Include="..\TriangleLogoDrawer.Data.Services\TriangleLogoDrawer.Data.Services.csproj" />
-    <ProjectReference Include="..\TriangleLogoDrawer.Data\TriangleLogoDrawer.Data.csproj" />
+    <ProjectReference Include="..\TriangleLogoDrawer.ApplicationCore\TriangleLogoDrawer.ApplicationCore.csproj" />
     <ProjectReference Include="..\TriangleLogoDrawer.Editor.FormOpener\TriangleLogoDrawer.Editor.FormOpener.csproj" />
   </ItemGroup>
 

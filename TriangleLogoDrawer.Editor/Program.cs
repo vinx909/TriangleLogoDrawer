@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TriangleLogoDrawer.ApplicationCore.Interfaces;
 using TriangleLogoDrawer.Data.Services;
 using TriangleLogoDrawer.Data.Services.SimpleDependencyProvidedSetup;
 using TriangleLogoDrawer.Editor.FormOpener;
@@ -49,7 +50,7 @@ namespace TriangleLogoDrawer.Editor
             {
                 case selectWindowOptions.WinForm:
                     toReturn = () => {
-                        WinForm.ImageSelectionForm imageSelectionForm = new WinForm.ImageSelectionForm(DependencyProvider.Provide<IImageData>());
+                        WinForm.ImageSelectionForm imageSelectionForm = new WinForm.ImageSelectionForm(DependencyProvider.Provide<IImageService>());
                         imageSelector = imageSelectionForm;
                         imageSelectionForm.Show();
                         };
@@ -66,7 +67,7 @@ namespace TriangleLogoDrawer.Editor
                     toReturn = () =>
                     {
                         EditImageInfo info = imageSelector.GetEditImageInfo();
-                        WinForm.ImageEditForm imageEditForm = new WinForm.ImageEditForm(DependencyProvider.Provide<IPointData>(), DependencyProvider.Provide<IShapeData>(), DependencyProvider.Provide<ITriangleData>(), DependencyProvider.Provide<ITriangleOrderData>(), info.Image, info.Fullscreen, info.Width, info.Height);
+                        WinForm.ImageEditForm imageEditForm = new WinForm.ImageEditForm(DependencyProvider.Provide<IImageService>(), DependencyProvider.Provide<IPointService>(), DependencyProvider.Provide<IShapeService>(), DependencyProvider.Provide<ITriangleService>(), DependencyProvider.Provide<IOrderService>(), info.Image, info.Fullscreen, info.Width, info.Height);
                         imageEditForm.Show();
                     };
                     break;

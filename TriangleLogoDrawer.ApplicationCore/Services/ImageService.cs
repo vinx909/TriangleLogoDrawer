@@ -63,5 +63,35 @@ namespace TriangleLogoDrawer.ApplicationCore.Services
 
             await imageRepository.Remove(image);
         }
+
+        public async Task<IOrderedEnumerable<Order>> GetOrder(Image image, int shapeId)
+        {
+            Shape shape = GetShape(image, shapeId);
+            if (shape != null)
+            {
+                return await shapeService.GetOrder(shape);
+            }
+            else
+            {
+                return (IOrderedEnumerable<Order>)new List<Order>();
+            }
+        }
+        public async Task<bool> HasOrders(Image image, int shapeId)
+        {
+            Shape shape = GetShape(image, shapeId);
+            if (shape != null)
+            {
+                return await shapeService.HasOrders(shape);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private Shape GetShape(Image image, int shapeId)
+        {
+            return image.Shapes.FirstOrDefault(s => s.Id == shapeId);
+        }
     }
 }

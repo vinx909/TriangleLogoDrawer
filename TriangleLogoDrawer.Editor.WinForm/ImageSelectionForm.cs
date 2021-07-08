@@ -8,7 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using TriangleLogoDrawer.Data.Services;
+using TriangleLogoDrawer.ApplicationCore.Interfaces;
+using TriangleLogoDrawer.ApplicationCore;
 using TriangleLogoDrawer.Editor.FormOpener;
 
 namespace TriangleLogoDrawer.Editor.WinForm
@@ -39,7 +40,7 @@ namespace TriangleLogoDrawer.Editor.WinForm
         private const int minWidthEdit = 1;
         private const int minHeightEdit = 1;
 
-        private readonly IImageData imageData;
+        private readonly IImageService imageService;
 
         private TextBox newImageNameTextBox;
         private TextBox newImageBackgroundImagePath;
@@ -65,9 +66,9 @@ namespace TriangleLogoDrawer.Editor.WinForm
         private int menuHeight;
         private int editImageBackgroundExamplePictureBoxMaxHeight;
 
-        public ImageSelectionForm(IImageData imageData)
+        public ImageSelectionForm(IImageService imageService)
         {
-            this.imageData = imageData;
+            this.imageService = imageService;
 
             editImageInfo = new EditImageInfo();
 
@@ -360,12 +361,12 @@ namespace TriangleLogoDrawer.Editor.WinForm
             validated = validated && ValidateInput(newImageFullscreenCheckBox.Checked, newImageWidthTextBox.Text, newImageHeightTextBox.Text, out width, out height, out errorMessageAddition);
             if (validated)
             {
-                Data.Image newImage = new()
+                ApplicationCore.Entities.Image newImage = new()
                 { 
                     Name = newImageNameTextBox.Text,
                     BackgroundImagePath = newImageBackgroundImagePath.Text
                 };
-                int newImageId = imageData.Create(newImage);
+                int newImageId = imageService.Create(newImage).Result.Id;
                 OpenEditImageWindow(newImageId, newImageFullscreenCheckBox.Checked, width, height);
             }
             else
@@ -379,7 +380,7 @@ namespace TriangleLogoDrawer.Editor.WinForm
             int? imageId = GetIdSelectedRadioButton();
             if (imageId != null)
             {
-                Data.Image image = imageData.Get((int)imageId);
+                ApplicationCore.Entities.Image image = imageService.Get((int)imageId).Result;
                 if (string.IsNullOrEmpty(image.BackgroundImagePath) == false)
                 {
                     try
@@ -482,7 +483,7 @@ namespace TriangleLogoDrawer.Editor.WinForm
             radioButtonValues.Clear();
 
             int height = 0;
-            foreach (Data.Image image in imageData.GetAll())
+            foreach (ApplicationCore.Entities.Image image in imageService.GetAll().Result)
             {
                 RadioButton newImageRadioButton = new()
                 {
@@ -517,7 +518,7 @@ namespace TriangleLogoDrawer.Editor.WinForm
 
         private void OpenEditImageWindow(int imageId, bool fullscreen, int width, int height)
         {
-            editImageInfo.Image = imageData.Get(imageId);
+            editImageInfo.Image = imageService.Get(imageId).Result;
             editImageInfo.Fullscreen = fullscreen;
             editImageInfo.Width = width;
             editImageInfo.Height = height;

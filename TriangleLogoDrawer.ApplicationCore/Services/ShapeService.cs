@@ -44,5 +44,27 @@ namespace TriangleLogoDrawer.ApplicationCore.Services
             await Task.WhenAll(tasks.ToArray());
             await shapeRepository.Remove(shape);
         }
+        public async Task<IOrderedEnumerable<Order>> GetOrder(Shape shape)
+        {
+            if (shape.Orders != null)
+            {
+                return shape.Orders.OrderBy(o => o.OrderNumber);
+            }
+            else
+            {
+                return (IOrderedEnumerable<Order>)new List<Order>();
+            }
+        }
+        public async Task<bool> HasOrders(Shape shape)
+        {
+            if (shape.Orders != null)
+            {
+                return shape.Orders.Any();
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

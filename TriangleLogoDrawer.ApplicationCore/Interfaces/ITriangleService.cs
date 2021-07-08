@@ -9,7 +9,7 @@ namespace TriangleLogoDrawer.ApplicationCore.Interfaces
 {
     public interface ITriangleService
     {
-        public Task Add(Triangle triangle);
+        public Task Create(Triangle triangle);
         public Task Remove(int triangleId);
         public Task Remove(Triangle triangle);
     }

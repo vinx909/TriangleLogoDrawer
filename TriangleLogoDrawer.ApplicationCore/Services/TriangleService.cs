@@ -19,7 +19,7 @@ namespace TriangleLogoDrawer.ApplicationCore.Services
             this.orderService = orderService;
         }
 
-        public async Task Add(Triangle triangle)
+        public async Task Create(Triangle triangle)
         {
             await triangleRepository.Create(triangle);
         }

@@ -9,8 +9,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using TriangleLogoDrawer.Data;
-using TriangleLogoDrawer.Data.Services;
+using TriangleLogoDrawer.ApplicationCore.Entities;
+using TriangleLogoDrawer.ApplicationCore.Interfaces;
 using TriangleLogoDrawer.Editor.FormOpener;
 using Point = System.Drawing.Point;
 
@@ -48,10 +48,11 @@ namespace TriangleLogoDrawer.Editor.WinForm
         private const int PointButtonRadius = 10;
         private const int shiftPerColourStep = /*8*/ 255;
 
-        private readonly IPointData pointData;
-        private readonly IShapeData shapeData;
-        private readonly ITriangleData triangleData;
-        private readonly ITriangleOrderData triangleOrderData;
+        private readonly IImageService imageService;
+        private readonly IPointService pointService;
+        private readonly IShapeService shapeService;
+        private readonly ITriangleService triangleService;
+        private readonly IOrderService orderService;
 
         private readonly int imageId;
         private readonly int middleX;
@@ -66,13 +67,12 @@ namespace TriangleLogoDrawer.Editor.WinForm
         private PictureBox pictureBox;
 
         private EditState state;
-        private IEnumerable<Data.Point> points;
-        private IEnumerable<Triangle> triangles;
-        private List<TriangleOrder> order;
+        private ApplicationCore.Entities.Image image;
+        private List<Order> order;
         private Triangle workingOnTriangle;
         private int activeShapeId;
 
-        public ImageEditForm(IPointData pointData, IShapeData shapeData, ITriangleData triangleData, ITriangleOrderData triangleOrderData, Data.Image Image, bool fullscreen, int width, int height)
+        public ImageEditForm(IImageService imageService, IPointService pointService, IShapeService shapeService, ITriangleService triangleService, IOrderService orderService, ApplicationCore.Entities.Image Image, bool fullscreen, int width, int height)
         {
             state = EditState.none;
             shapeIdsPerToolStripItem = new();
@@ -80,10 +80,11 @@ namespace TriangleLogoDrawer.Editor.WinForm
 
             BackColor = backgroundColour;
 
-            this.pointData = pointData;
-            this.shapeData = shapeData;
-            this.triangleData = triangleData;
-            this.triangleOrderData = triangleOrderData;
+            this.imageService = imageService;
+            this.pointService = pointService;
+            this.shapeService = shapeService;
+            this.triangleService = triangleService;
+            this.orderService = orderService;
 
             this.imageId = Image.Id;
 
@@ -220,7 +221,7 @@ namespace TriangleLogoDrawer.Editor.WinForm
         {
             //TODO: initialize triangles functionality
             state = EditState.triangle;
-            points = pointData.GetAll(imageId);
+            image = imageService.Get(imageId).Result;
             newWorkingOnTriangle();
             Draw();
         }
@@ -250,8 +251,7 @@ namespace TriangleLogoDrawer.Editor.WinForm
                 state = EditState.order;
                 activeShapeId = (int)shapeId;
                 newWorkingOnTriangle();
-                points = pointData.GetAll(imageId);
-                triangles = triangleData.GetAll(imageId);
+                RefreshImage();
                 Draw();
             }
             else
@@ -259,6 +259,8 @@ namespace TriangleLogoDrawer.Editor.WinForm
                 UpdateToolStripMenuItemOrder();
             }
         }
+
+
         private void MenuExitClick(object sender, EventArgs args)
         {
             Hide();
@@ -269,7 +271,7 @@ namespace TriangleLogoDrawer.Editor.WinForm
             switch (state)
             {
                 case EditState.point:
-                    pointData.Create(new Data.Point() { ImageId = imageId, X = GetXConvertedFormData(Cursor.Position.X), Y = GetYConvertedFormData(Cursor.Position.Y) });
+                    pointService.Create(new ApplicationCore.Entities.Point() { ImageId = imageId, X = GetXConvertedFormData(Cursor.Position.X), Y = GetYConvertedFormData(Cursor.Position.Y) });
                     Draw();
                     break;
             }
@@ -282,7 +284,7 @@ namespace TriangleLogoDrawer.Editor.WinForm
                 case EditState.point:
                     if (sender.GetType() == typeof(RoundButton))
                     {
-                        pointData.Delete(((RoundButton)sender).PointId);
+                        pointService.Remove(((RoundButton)sender).Point);
                     }
                     Draw();
                     break;
@@ -290,35 +292,35 @@ namespace TriangleLogoDrawer.Editor.WinForm
                 case EditState.triangle:
                     if (sender.GetType() == typeof(RoundButton))
                     {
-                        int buttonId = ((RoundButton)sender).PointId;
-                        if (workingOnTriangle.PointIdOne == buttonId)
+                        ApplicationCore.Entities.Point point = ((RoundButton)sender).Point;
+                        if (workingOnTriangle.PointOne == point)
                         {
-                            workingOnTriangle.PointIdOne = default;
+                            workingOnTriangle.PointOne = default;
                         }
-                        else if(workingOnTriangle.PointIdOne == default)
+                        else if (workingOnTriangle.PointTwo == point)
                         {
-                            workingOnTriangle.PointIdOne = buttonId;
+                            workingOnTriangle.PointTwo = default;
                         }
-                        else if (workingOnTriangle.PointIdTwo == buttonId)
+                        else if (workingOnTriangle.PointThree == point)
                         {
-                            workingOnTriangle.PointIdTwo = default;
+                            workingOnTriangle.PointThree = default;
                         }
-                        else if (workingOnTriangle.PointIdTwo == default)
+                        else if(workingOnTriangle.PointOne == default)
                         {
-                            workingOnTriangle.PointIdTwo = buttonId;
+                            workingOnTriangle.PointOne = point;
                         }
-                        else if (workingOnTriangle.PointIdThree == buttonId)
+                        else if (workingOnTriangle.PointTwo == default)
                         {
-                            workingOnTriangle.PointIdThree = default;
+                            workingOnTriangle.PointTwo = point;
                         }
-                        else if (workingOnTriangle.PointIdThree == default)
+                        else if (workingOnTriangle.PointThree == default)
                         {
-                            workingOnTriangle.PointIdThree = buttonId;
+                            workingOnTriangle.PointThree = point;
                         }
 
-                        if(workingOnTriangle.PointIdOne != default && workingOnTriangle.PointIdTwo != default && workingOnTriangle.PointIdThree != default)
+                        if(workingOnTriangle.PointOne != default && workingOnTriangle.PointTwo != default && workingOnTriangle.PointThree != default)
                         {
-                            triangleData.Create(workingOnTriangle);
+                            triangleService.Create(workingOnTriangle);
                             newWorkingOnTriangle();
                         }
                         Draw();
@@ -333,7 +335,7 @@ namespace TriangleLogoDrawer.Editor.WinForm
                 case EditState.triangle:
                     if (sender.GetType() == typeof(TriangleButton))
                     {
-                        triangleData.Delete(((TriangleButton)sender).TriangleId);
+                        triangleService.Remove(((TriangleButton)sender).Triangle);
                     }
                     Draw();
                     break;
@@ -342,16 +344,16 @@ namespace TriangleLogoDrawer.Editor.WinForm
                     if (sender.GetType() == typeof(TriangleButton))
                     {
                         TriangleButton button = ((TriangleButton)sender);
-                        if (workingOnTriangle.Id == button.TriangleId)
+                        if (workingOnTriangle == button.Triangle)
                         {
                             workingOnTriangle.Id = default;
                         }else if(workingOnTriangle.Id == default)
                         {
-                            workingOnTriangle.Id = button.TriangleId;
+                            workingOnTriangle = button.Triangle;
                         }
                         else
                         {
-                            OrderAction(button.TriangleId);
+                            OrderAction(button.Triangle);
                             newWorkingOnTriangle();
                         }
                         Draw();
@@ -370,37 +372,36 @@ namespace TriangleLogoDrawer.Editor.WinForm
             switch (state)
             {
                 case EditState.point:
-                    points = pointData.GetAll(imageId);
-                    triangles = triangleData.GetAll(imageId);
-                    DrawPoints(points);
-                    DrawTriangles(this.triangles, true);
+                    image = imageService.Get(imageId).Result;
+                    DrawPoints(image.Points);
+                    DrawTriangles(image.Triangles, true);
                     break;
 
                 case EditState.triangle:
-                    triangles = triangleData.GetAll(imageId);
-                    DrawPoints(this.points);
-                    DrawTriangles(triangles);
+                    image = imageService.Get(imageId).Result;
+                    DrawPoints(image.Points);
+                    DrawTriangles(image.Triangles);
                     break;
 
                 case EditState.order:
-                    List<TriangleOrder> order = triangleOrderData.GetOrder(activeShapeId);
+                    IOrderedEnumerable<Order> order = image.GetOrder(activeShapeId);
                     DrawLineOrder(order);
                     DrawTriangleOrder(order);
                     break;
             }
         }
-        private void DrawPoints(IEnumerable<Data.Point> points)
+        private void DrawPoints(IEnumerable<ApplicationCore.Entities.Point> points)
         {
-            foreach (Data.Point point in points)
+            foreach (ApplicationCore.Entities.Point point in points)
             {
-                Button newButton = new RoundButton(point.Id)
+                Button newButton = new RoundButton(point)
                 {
                     Location = new System.Drawing.Point(GetXConvertedDataForm(point.X) - PointButtonRadius / 2, GetYConvertedDataForm(point.Y) - PointButtonRadius / 2),
                     Width = PointButtonRadius,
                     Height = PointButtonRadius,
                     BackColor = pointButtonNotSelectedColour
                 };
-                if(workingOnTriangle?.PointIdOne == point.Id || workingOnTriangle?.PointIdTwo == point.Id || workingOnTriangle?.PointIdThree == point.Id)
+                if(workingOnTriangle?.PointOne == point || workingOnTriangle?.PointTwo == point || workingOnTriangle?.PointThree == point)
                 {
                     newButton.BackColor = pointButtonSelectedColour;
                 }
@@ -430,41 +431,35 @@ namespace TriangleLogoDrawer.Editor.WinForm
                 DrawTriangle(triangle, colour);
             }
         }
-        private void DrawTriangleOrder(List<TriangleOrder> order)
+        private void DrawTriangleOrder(IOrderedEnumerable<Order> order)
         {
-            List<Triangle> allTriangles = new(triangles);
+            Order[] orderArray = order.ToArray();
+            List<Triangle> allTriangles = new(image.Triangles);
             
-            if (order.Count > 0)
+            if (order.Any())
             {
                 ColourShifter shifter = new(shiftPerColourStep);
-                for (int i = 0; i < order.Count; i++)
+                for (int i = 0; i < orderArray.Length; i++)
                 {
-                    DrawTriangle(triangles.FirstOrDefault(t => t.Id == order[i].TriangleId), shifter.GetNextColour(127));
-                    allTriangles.RemoveAll(t => t.Id == order[i].TriangleId);
+                    DrawTriangle(orderArray[i].Triangle, shifter.GetNextColour(127));
+                    allTriangles.RemoveAll(t => t.Id == orderArray[i].TriangleId);
                 }
             }
             DrawTriangles(allTriangles);
         }
         private void DrawTriangle(Triangle triangle, Color color)
         {
-            Data.Point pointOne = points.FirstOrDefault(p => p.Id == triangle.PointIdOne);
-            Data.Point pointTwo = points.FirstOrDefault(p => p.Id == triangle.PointIdTwo);
-            Data.Point pointThree = points.FirstOrDefault(p => p.Id == triangle.PointIdThree);
-            Button newButton = new TriangleButton(triangle.Id,
-                GetXConvertedDataForm(pointOne.X), GetYConvertedDataForm(pointOne.Y),
-                GetXConvertedDataForm(pointTwo.X), GetYConvertedDataForm(pointTwo.Y),
-                GetXConvertedDataForm(pointThree.X), GetYConvertedDataForm(pointThree.Y),
-                color, triangleButtonEdgeColour);
+            Button newButton = new TriangleButton(triangle, GetXConvertedDataForm, GetYConvertedDataForm, color, triangleButtonEdgeColour);
             newButton.Click += TriangleButtonClick;
             Controls.Add(newButton);
             drawnShapes.Add(newButton);
         }
-        private void DrawLineOrder(List<TriangleOrder> order)
+        private void DrawLineOrder(IOrderedEnumerable<Order> order)
         {
             List<Point> pointsInOrder = new();
-            for (int i = 0; i < order.Count; i++)
+            foreach (Order orderItem in order)
             {
-                pointsInOrder.Add(getcenterPointOfTriangle(order[i].TriangleId));
+                pointsInOrder.Add(getcenterPointOfTriangle(orderItem.Triangle));
             }
             Line newLine = new Line(pointsInOrder, orderLineWidth)
             {
@@ -475,17 +470,17 @@ namespace TriangleLogoDrawer.Editor.WinForm
             Controls.Add(newLine);
             drawnShapes.Add(newLine);
         }
-        private Point getcenterPointOfTriangle(int triangleId)
+        private Point getcenterPointOfTriangle(Triangle triangle)
         {
-            Triangle triangle = triangles.FirstOrDefault(t => t.Id == triangleId);
-            Data.Point pointOne = points.FirstOrDefault(p => p.Id == triangle.PointIdOne);
-            Data.Point pointTwo = points.FirstOrDefault(p => p.Id == triangle.PointIdTwo);
-            Data.Point pointThree = points.FirstOrDefault(p => p.Id == triangle.PointIdThree);
-            int x = (GetXConvertedDataForm(pointOne.X) + GetXConvertedDataForm(pointTwo.X) + GetXConvertedDataForm(pointThree.X)) / 3;
-            int y = (GetYConvertedDataForm(pointOne.Y) + GetYConvertedDataForm(pointTwo.Y) + GetYConvertedDataForm(pointThree.Y)) / 3;
+            int x = (GetXConvertedDataForm(triangle.PointOne.X) + GetXConvertedDataForm(triangle.PointTwo.X) + GetXConvertedDataForm(triangle.PointThree.X)) / 3;
+            int y = (GetYConvertedDataForm(triangle.PointOne.Y) + GetYConvertedDataForm(triangle.PointTwo.Y) + GetYConvertedDataForm(triangle.PointThree.Y)) / 3;
             return new Point(x, y);
         }
 
+        private void RefreshImage()
+        {
+            image = imageService.Get(imageId).Result;
+        }
         private void UpdateToolStripMenuItemOrder()
         {
             foreach (KeyValuePair< ToolStripItem, int> shapeIdPerToolStripItem in shapeIdsPerToolStripItem)
@@ -493,7 +488,7 @@ namespace TriangleLogoDrawer.Editor.WinForm
                 toolStripMenuItemOrder.DropDownItems.Remove(shapeIdPerToolStripItem.Key);
             }
             shapeIdsPerToolStripItem.Clear();
-            foreach (Shape shape in shapeData.GetAll(imageId))
+            foreach (Shape shape in image.Shapes)
             {
                 ToolStripItem newItem = new ToolStripMenuItem()
                 {
@@ -507,7 +502,7 @@ namespace TriangleLogoDrawer.Editor.WinForm
 
         private void newWorkingOnTriangle()
         {
-            workingOnTriangle = new Data.Triangle()
+            workingOnTriangle = new Triangle()
             {
                 ImageId = imageId
             };
@@ -528,9 +523,19 @@ namespace TriangleLogoDrawer.Editor.WinForm
         {
             return 1m * (formY - middleY) / distanceModifier;
         }
-        private void OrderAction(int triangleId)
+        private void OrderAction(Triangle triangle)
         {
-            TriangleOrder newOrder;
+            if (!image.HasOrders(activeShapeId))
+            {
+                orderService.Create(new() { OrderNumber = 0, ShapeId = activeShapeId, TriangleId = workingOnTriangle.Id });
+                orderService.Create(new() { OrderNumber = 1, ShapeId = activeShapeId, TriangleId = triangle.Id });
+            }
+            else
+            {
+                orderService.Create(new() { OrderNumber = orderService.GetOrderNumber(workingOnTriangle), ShapeId = activeShapeId, TriangleId = triangle.Id });
+            }
+
+            Order newOrder;
 
             if (order.Count > 0)
             {
@@ -540,11 +545,11 @@ namespace TriangleLogoDrawer.Editor.WinForm
                     {
                         if( i + 1 < order.Count && order[i + 1].TriangleId == triangleId)
                         {
-                            triangleOrderData.Delete(activeShapeId, triangleId);
+                            orderService.Remove(activeShapeId, triangleId);
                             return;
                         }
                         newOrder = new() { ShapeId = activeShapeId, TriangleId = triangleId, OrderNumber = order[i].OrderNumber + 1 };
-                        triangleOrderData.Create(newOrder);
+                        orderService.Create(newOrder);
                         return;
                     }
                 }
@@ -552,25 +557,25 @@ namespace TriangleLogoDrawer.Editor.WinForm
             }
 
             newOrder = new() { ShapeId = activeShapeId, TriangleId = workingOnTriangle.Id, OrderNumber = order.Count };
-            triangleOrderData.Create(newOrder);
+            orderService.Create(newOrder);
             newOrder = new() { ShapeId = activeShapeId, TriangleId = triangleId, OrderNumber = order.Count + 1 };
-            triangleOrderData.Create(newOrder);
+            orderService.Create(newOrder);
             return;
         }
 
         private class RoundButton : Button
         {
-            internal int PointId { get; set; }
-            internal RoundButton(int pointId) : base()
+            internal ApplicationCore.Entities.Point Point { get; set; }
+            internal RoundButton(ApplicationCore.Entities.Point point) : base()
             {
-                PointId = pointId;
+                Point = point;
                 FlatStyle = FlatStyle.Flat;
             }
             protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
             {
                 GraphicsPath grPath = new GraphicsPath();
                 grPath.AddEllipse(0, 0, Width-1, Height-1);
-                this.Region = new Region(grPath);
+                Region = new Region(grPath);
                 base.OnPaint(e);
             }
         }
@@ -578,29 +583,33 @@ namespace TriangleLogoDrawer.Editor.WinForm
         {
             private const int borderWidth = 2;
 
-            internal int TriangleId { get; set; }
+            public Triangle Triangle { get; set; }
+
             private Point[] points;
             private Color shapeColour;
             private Color edgeColour;
 
-            internal TriangleButton(int triangleId, int x1, int y1, int x2, int y2, int x3, int y3, Color shapeColour, Color edgeColour)
+            internal TriangleButton(Triangle triangle, int x1, int y1, int x2, int y2, int x3, int y3, Color shapeColour, Color edgeColour)
             {
-                FlatStyle = FlatStyle.Flat;  
+                FlatStyle = FlatStyle.Flat;
 
                 this.shapeColour = shapeColour;
                 this.edgeColour = edgeColour;
-                TriangleId = triangleId;
+                Triangle = triangle;
 
                 Location = new Point(Math.Min(Math.Min(x1, x2), x3),Math.Min(Math.Min(y1, y2), y3));
                 Width = Math.Max(Math.Max(x1, x2), x3) - Location.X;
                 Height = Math.Max(Math.Max(y1, y2), y3) - Location.Y;
                 points = new Point[3]
                 {
-                    new System.Drawing.Point(x1 - Location.X, y1 - Location.Y),
-                    new System.Drawing.Point(x2 - Location.X, y2 - Location.Y),
-                    new System.Drawing.Point(x3 - Location.X, y3 - Location.Y)
+                    new Point(x1 - Location.X, y1 - Location.Y),
+                    new Point(x2 - Location.X, y2 - Location.Y),
+                    new Point(x3 - Location.X, y3 - Location.Y)
                 };
             }
+
+            public TriangleButton(Triangle triangle, Func<decimal, int> getXConvertedDataForm, Func<decimal, int> getYConvertedDataForm, Color shapeColour, Color edgeColour) : this(triangle, getXConvertedDataForm(triangle.PointOne.X), getYConvertedDataForm(triangle.PointOne.Y), getXConvertedDataForm(triangle.PointTwo.X), getYConvertedDataForm(triangle.PointTwo.Y), getXConvertedDataForm(triangle.PointThree.X), getYConvertedDataForm(triangle.PointThree.Y), shapeColour, edgeColour) { }
+
             protected override void OnPaint(PaintEventArgs e)
             {
                 GraphicsPath graphicsPath = new GraphicsPath();
