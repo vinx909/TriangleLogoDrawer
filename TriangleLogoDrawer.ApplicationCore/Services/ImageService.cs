@@ -31,9 +31,9 @@ namespace TriangleLogoDrawer.ApplicationCore.Services
             return await imageRepository.Get(imageId);
         }
 
-        public async Task Create(Image image)
+        public async Task<Image> Create(Image image)
         {
-            await imageRepository.Create(image);
+            return await imageRepository.Create(image);
         }
 
         public async Task Edit(Image image)
@@ -76,7 +76,7 @@ namespace TriangleLogoDrawer.ApplicationCore.Services
                 return (IOrderedEnumerable<Order>)new List<Order>();
             }
         }
-        public async Task<bool> HasOrders(Image image, int shapeId)
+        public async Task<bool> HasOrder(Image image, int shapeId)
         {
             Shape shape = GetShape(image, shapeId);
             if (shape != null)

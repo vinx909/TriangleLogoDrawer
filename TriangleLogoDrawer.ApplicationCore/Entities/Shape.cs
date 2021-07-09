@@ -13,29 +13,5 @@ namespace TriangleLogoDrawer.ApplicationCore.Entities
         public Image Image { get; set; }
         public string Name { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
-
-        internal IOrderedEnumerable<Order> GetOrder()
-        {
-            if(Orders != null)
-            {
-                return Orders.OrderBy(o => o.OrderNumber);
-            }
-            else
-            {
-                return (IOrderedEnumerable<Order>)new List<Order>();
-            }
-        }
-
-        public bool HasOrders()
-        {
-            if(Orders != null)
-            {
-                return Orders.Any();
-            }
-            else
-            {
-                return false;
-            }
-        }
     }
 }

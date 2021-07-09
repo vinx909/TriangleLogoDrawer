@@ -18,10 +18,11 @@ namespace TriangleLogoDrawer.Infrastructure.Data
             this.triangleDrawerDbContext = triangleDrawerDbContext;
         }
 
-        public async Task Create(T @object)
+        public async Task<T> Create(T @object)
         {
             triangleDrawerDbContext.Add<T>(@object);
             await triangleDrawerDbContext.SaveChangesAsync();
+            return @object;
         }
 
         public async Task Edit(T @object)
@@ -37,7 +38,13 @@ namespace TriangleLogoDrawer.Infrastructure.Data
 
         public async Task<IEnumerable<T>> GetAll()
         {
-            return await triangleDrawerDbContext.Set<T>().ToArrayAsync();
+            return await triangleDrawerDbContext.Set<T>().ToListAsync(); ;
+        }
+
+        public async Task<IEnumerable<T>> GetAll(Func<T, bool> searchQuiry)
+        {
+            List<T> list = await triangleDrawerDbContext.Set<T>().ToListAsync();
+            return list.Where(searchQuiry);
         }
 
         public async Task Remove(T @object)

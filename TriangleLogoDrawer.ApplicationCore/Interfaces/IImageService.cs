@@ -14,6 +14,6 @@ namespace TriangleLogoDrawer.ApplicationCore.Interfaces
         public Task Remove(int imageId);
         public Task Remove(Image image);
         public Task<IOrderedEnumerable<Order>> GetOrder(Image image, int shapeId);
-        public Task<bool> HasOrder(int shapeId);
+        public Task<bool> HasOrder(Image image, int shapeId);
     }
 }

@@ -10,8 +10,9 @@ namespace TriangleLogoDrawer.ApplicationCore.Interfaces
     public interface IDataRepository<T> where T : class
     {
         public Task<IEnumerable<T>> GetAll();
-        public Task<T> Get(int imageId);
-        public Task Create(T @object);
+        public Task<IEnumerable<T>> GetAll(Func<T, bool> searchQuiry);
+        public Task<T> Get(int id);
+        public Task<T> Create(T @object);
         public Task Edit(T @object);
         public Task Remove(T @object);
     }

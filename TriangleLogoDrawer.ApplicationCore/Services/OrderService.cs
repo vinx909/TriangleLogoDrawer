@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TriangleLogoDrawer.ApplicationCore.Entities;
 using TriangleLogoDrawer.ApplicationCore.Interfaces;
+using TriangleLogoDrawer.ApplicationCore.Services.Exceptions;
 
 namespace TriangleLogoDrawer.ApplicationCore.Services
 {
@@ -17,7 +18,7 @@ namespace TriangleLogoDrawer.ApplicationCore.Services
             OrderRepository = orderRepository;
         }
 
-        public async Task Add(Order order)
+        public async Task Create(Order order)
         {
             Task createTask = OrderRepository.Create(order);
             Task increaseNumberTask = IncreaseNumberIfNessisary(order.Shape, order.OrderNumber);
@@ -66,6 +67,16 @@ namespace TriangleLogoDrawer.ApplicationCore.Services
         public async Task<bool> TriangleNotUsed(Triangle triangle)
         {
             return await OrderRepository.TriangleNotUsed(triangle);
+        }
+
+        public int GetOrderNumber(Triangle workingOnTriangle)
+        {
+            Order orderWithTriangle = OrderRepository.GetAll((order) => { return order.TriangleId == workingOnTriangle.Id; }).Result.FirstOrDefault();
+            if (orderWithTriangle == null)
+            {
+                throw ExceptionProvider.GetNullPointerException(nameof(Order), nameof(Order.TriangleId), workingOnTriangle.Id.ToString());
+            }
+            return orderWithTriangle.OrderNumber;
         }
     }
 }

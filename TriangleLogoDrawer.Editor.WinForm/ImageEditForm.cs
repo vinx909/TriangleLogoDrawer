@@ -384,7 +384,7 @@ namespace TriangleLogoDrawer.Editor.WinForm
                     break;
 
                 case EditState.order:
-                    IOrderedEnumerable<Order> order = image.GetOrder(activeShapeId);
+                    IOrderedEnumerable<Order> order = imageService.GetOrder(this.image, activeShapeId).Result;
                     DrawLineOrder(order);
                     DrawTriangleOrder(order);
                     break;
@@ -525,7 +525,7 @@ namespace TriangleLogoDrawer.Editor.WinForm
         }
         private void OrderAction(Triangle triangle)
         {
-            if (!image.HasOrders(activeShapeId))
+            if (!imageService.HasOrder(image, activeShapeId).Result)
             {
                 orderService.Create(new() { OrderNumber = 0, ShapeId = activeShapeId, TriangleId = workingOnTriangle.Id });
                 orderService.Create(new() { OrderNumber = 1, ShapeId = activeShapeId, TriangleId = triangle.Id });
@@ -534,33 +534,6 @@ namespace TriangleLogoDrawer.Editor.WinForm
             {
                 orderService.Create(new() { OrderNumber = orderService.GetOrderNumber(workingOnTriangle), ShapeId = activeShapeId, TriangleId = triangle.Id });
             }
-
-            Order newOrder;
-
-            if (order.Count > 0)
-            {
-                for (int i = 0; i < order.Count; i++)
-                {
-                    if (order[i].TriangleId == workingOnTriangle.Id)
-                    {
-                        if( i + 1 < order.Count && order[i + 1].TriangleId == triangleId)
-                        {
-                            orderService.Remove(activeShapeId, triangleId);
-                            return;
-                        }
-                        newOrder = new() { ShapeId = activeShapeId, TriangleId = triangleId, OrderNumber = order[i].OrderNumber + 1 };
-                        orderService.Create(newOrder);
-                        return;
-                    }
-                }
-
-            }
-
-            newOrder = new() { ShapeId = activeShapeId, TriangleId = workingOnTriangle.Id, OrderNumber = order.Count };
-            orderService.Create(newOrder);
-            newOrder = new() { ShapeId = activeShapeId, TriangleId = triangleId, OrderNumber = order.Count + 1 };
-            orderService.Create(newOrder);
-            return;
         }
 
         private class RoundButton : Button
