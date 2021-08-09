@@ -35,12 +35,12 @@ namespace TriangleLogoDrawer.Editor.WinForm
 
         private const string MessageRemoveShapeWrongState = "you must have state active before you can delete it";
 
-        private Color backgroundColour = Color.FromArgb(255, 255, 255, 255);
-        private Color pointButtonNotSelectedColour = Color.FromArgb(127, 0, 0, 0);
-        private Color pointButtonSelectedColour = Color.FromArgb(255, 255, 0, 0);
-        private Color triangleButtonSelectedColour = Color.FromArgb(127, 127, 127, 127);
-        private Color triangleButtonNotSelectedColour = Color.FromArgb(127, 170, 170, 170);
-        private Color triangleButtonEdgeColour = Color.FromArgb(255, 0, 0, 0);
+        private readonly Color backgroundColour = Color.FromArgb(255, 255, 255, 255);
+        private readonly Color pointButtonNotSelectedColour = Color.FromArgb(127, 0, 0, 0);
+        private readonly Color pointButtonSelectedColour = Color.FromArgb(255, 255, 0, 0);
+        private readonly Color triangleButtonSelectedColour = Color.FromArgb(127, 127, 127, 127);
+        private readonly Color triangleButtonNotSelectedColour = Color.FromArgb(127, 170, 170, 170);
+        private readonly Color triangleButtonEdgeColour = Color.FromArgb(255, 0, 0, 0);
 
         private const int menuVisibilityTimerInterval = 500;
         private const int MenuVisibilityMaxMouseHideForVisible = 2;
@@ -68,7 +68,7 @@ namespace TriangleLogoDrawer.Editor.WinForm
 
         private EditState state;
         private ApplicationCore.Entities.Image image;
-        private List<Order> order;
+        private readonly List<Order> order;
         private Triangle workingOnTriangle;
         private int activeShapeId;
 
@@ -117,7 +117,7 @@ namespace TriangleLogoDrawer.Editor.WinForm
             Controls.Add(menuStrip);
             menuStrip.Visible = false;
 
-            Timer menuVisibilityTimer = new Timer();
+            Timer menuVisibilityTimer = new();
             menuVisibilityTimer.Enabled = true;
             menuVisibilityTimer.Interval = menuVisibilityTimerInterval;
             menuVisibilityTimer.Tick += MenuVisibilityTimerTick;
@@ -160,7 +160,7 @@ namespace TriangleLogoDrawer.Editor.WinForm
             };
             toolStripMenuItemExit.Click += MenuExitClick;
 
-            List<ToolStripMenuItem> toReturn = new List<ToolStripMenuItem>()
+            List<ToolStripMenuItem> toReturn = new()
             {
                 toolStripMenuItemPoint,
                 toolStripMenuItemTriangle,
@@ -461,7 +461,7 @@ namespace TriangleLogoDrawer.Editor.WinForm
             {
                 pointsInOrder.Add(getcenterPointOfTriangle(orderItem.Triangle));
             }
-            Line newLine = new Line(pointsInOrder, orderLineWidth)
+            Line newLine = new(pointsInOrder, orderLineWidth)
             {
                 Location = new Point(0, 0),
                 Width = ClientSize.Width,
@@ -558,9 +558,9 @@ namespace TriangleLogoDrawer.Editor.WinForm
 
             public Triangle Triangle { get; set; }
 
-            private Point[] points;
-            private Color shapeColour;
-            private Color edgeColour;
+            private readonly Point[] points;
+            private readonly Color shapeColour;
+            private readonly Color edgeColour;
 
             internal TriangleButton(Triangle triangle, int x1, int y1, int x2, int y2, int x3, int y3, Color shapeColour, Color edgeColour)
             {
@@ -686,9 +686,9 @@ namespace TriangleLogoDrawer.Editor.WinForm
             private const int minValue = 0;
             private const int maxValue = 255;
 
-            private Dictionary<colourPart, int> valuePerColourPart;
+            private readonly Dictionary<colourPart, int> valuePerColourPart;
 
-            private int shiftPerStep;
+            private readonly int shiftPerStep;
 
             private colourPart activeColour;
             private bool goingUp;

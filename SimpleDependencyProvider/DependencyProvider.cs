@@ -8,19 +8,24 @@ namespace TriangleLogoDrawer.SimpleDependencyProvider
 {
     public static class DependencyProvider
     {
-        public static Dictionary<Type, Func<object>> providedOptions = new Dictionary<Type, Func<object>>();
+        private const string dependencyNotProvidedExceptionString = "the Dependencyprovider does not have a method of providing an instance of {0}";
 
-        public static void Add(Type newReturnType, Func<object> newProvidingMethod)
+        private static readonly Dictionary<Type, Func<object>> providedOptions = new();
+
+        public static void Add<T>(Func<T> providingFunction) where T : class
         {
-            providedOptions.Add(newReturnType, newProvidingMethod);
+            providedOptions.Add(typeof(T), providingFunction);
         }
-        public static T Provide<T>() where T : class
+        public static T Get<T>() where T : class
         {
             if (providedOptions.ContainsKey(typeof(T)))
             {
-                return (T)providedOptions[typeof(T)]();
+                return (T)providedOptions[typeof(T)].Invoke();
             }
-            return null;
+            else
+            {
+                throw new KeyNotFoundException(string.Format(dependencyNotProvidedExceptionString, typeof(T).Name));
+            }
         }
     }
 }

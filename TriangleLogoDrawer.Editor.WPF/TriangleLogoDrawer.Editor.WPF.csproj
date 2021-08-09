@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleDependencyProvider\SimpleDependencyProvider.csproj" />
+    <ProjectReference Include="..\TriangleLogoDrawer.Editor.ViewModel\TriangleLogoDrawer.Editor.ViewModel.csproj" />
+  </ItemGroup>
+
+</Project>

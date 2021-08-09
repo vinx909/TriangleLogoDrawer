@@ -50,7 +50,7 @@ namespace TriangleLogoDrawer.Editor
             {
                 case selectWindowOptions.WinForm:
                     toReturn = () => {
-                        WinForm.ImageSelectionForm imageSelectionForm = new WinForm.ImageSelectionForm(DependencyProvider.Provide<IImageService>());
+                        WinForm.ImageSelectionForm imageSelectionForm = new WinForm.ImageSelectionForm(DependencyProvider.Get<IImageService>());
                         imageSelector = imageSelectionForm;
                         imageSelectionForm.Show();
                         };
@@ -67,7 +67,7 @@ namespace TriangleLogoDrawer.Editor
                     toReturn = () =>
                     {
                         EditImageInfo info = imageSelector.GetEditImageInfo();
-                        WinForm.ImageEditForm imageEditForm = new WinForm.ImageEditForm(DependencyProvider.Provide<IImageService>(), DependencyProvider.Provide<IPointService>(), DependencyProvider.Provide<IShapeService>(), DependencyProvider.Provide<ITriangleService>(), DependencyProvider.Provide<IOrderService>(), info.Image, info.Fullscreen, info.Width, info.Height);
+                        WinForm.ImageEditForm imageEditForm = new WinForm.ImageEditForm(DependencyProvider.Get<IImageService>(), DependencyProvider.Get<IPointService>(), DependencyProvider.Get<IShapeService>(), DependencyProvider.Get<ITriangleService>(), DependencyProvider.Get<IOrderService>(), info.Image, info.Fullscreen, info.Width, info.Height);
                         imageEditForm.Show();
                     };
                     break;

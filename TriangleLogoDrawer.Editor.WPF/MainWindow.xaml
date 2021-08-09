@@ -1,0 +1,123 @@
+﻿<Window x:Class="TriangleLogoDrawer.Editor.WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodel="clr-namespace:TriangleLogoDrawer.Editor.ViewModel;assembly=TriangleLogoDrawer.Editor.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:OpeningViewModel}"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <!--topmenu-->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button Content="New" Grid.Column="0" Command="{Binding CommandSwitchStageNewImage}"/>
+            <Button Content="Load" Grid.Column="1" Command="{Binding CommandSwitchStageOpenImage}"/>
+        </Grid>
+
+        <!--create new image-->
+        <!--Visibility="{Binding NewImageVisibility}"-->
+        <Grid Grid.Row="1" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Name"/>
+            <TextBox Grid.Row="1"/>
+            <TextBlock Grid.Row="2" Text="background image path"/>
+            <TextBox Grid.Row="3"/>
+            <Image Grid.Row="4" />
+            <Grid Grid.Row="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <CheckBox IsChecked="{Binding FullScreen}"/>
+                <TextBlock Grid.Column="1" Text="fullscreen"/>
+            </Grid>
+            <Grid Grid.Row="6" Visibility="{Binding WidthHeigthVisibility}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="width:"/>
+                <TextBox Grid.Column="1"/>
+                <TextBlock Grid.Row="1" Text="height:"/>
+                <TextBox Grid.Row="1" Grid.Column="1"/>
+            </Grid>
+            <Button Grid.Row="7" Content="create and open"/>
+        </Grid>
+        <!--open image-->
+        <Grid Grid.Row="1" Visibility="{Binding OpenImageVisibility}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Name"/>
+                <TextBox Grid.Row="1"/>
+                <TextBlock Grid.Row="2" Text="background image path"/>
+                <TextBox Grid.Row="3"/>
+                <Image Grid.Row="4" />
+                <Grid Grid.Row="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <CheckBox IsChecked="{Binding FullScreen}"/>
+                    <TextBlock Grid.Column="1" Text="fullscreen"/>
+                </Grid>
+                <Grid Grid.Row="6" Visibility="{Binding WidthHeigthVisibility}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="width:"/>
+                    <TextBox Grid.Column="1"/>
+                    <TextBlock Grid.Row="1" Text="height:"/>
+                    <TextBox Grid.Row="1" Grid.Column="1"/>
+                </Grid>
+                <Grid Grid.Row="7">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Button Content="edit"/>
+                    <Button Grid.Column="1" Content="open"/>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
